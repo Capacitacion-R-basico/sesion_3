@@ -27,7 +27,7 @@ class: center, middle
 
 ## Procesamiento de bases de datos (2)
 
-### Noviembre 2020
+### Abril 2021
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = TRUE)
@@ -79,29 +79,23 @@ fuentes usando paquetes como: **`haven`**, **`readr`** y **`readxl`**.
 
 --
 
-- Cómo seleccionar variables dentro de un dataframe, ya sea nombrándolas 
-explícitamente, de manera inversa (con un signo -), o con funciones axiliares. 
-La función de selección vista fue `select()`.
+- Cómo seleccionar variables dentro de un dataframe usando `select()`.
 
 --
 
-- Cómo renombrar variables dentro de un dataframe, utilizando la función 
-`rename()`.
+- Cómo renombrar variables dentro de un dataframe, utilizando `rename()`.
 
 --
 
-- Cómo filtrar variables de una dataframe, utilizando la función `filter()`. 
-Vimos que era posible filtrar por una o más condiciones en forma conjunta.
+- Cómo filtrar variables de una dataframe, utilizando `filter()`. 
 
 --
 
-- Cómo ordenar las filas de un dataframe, a partir de una o más columnas, ya 
-sea de manera ascendente o descendente, utilizando la función `arrange()`.
+- Cómo ordenar las filas de un dataframe usando `arrange()`.
 
 --
 
-- Cómo editar variables de un dataframe y/o crear una nueva, utilizando la 
-función `mutate()`.
+- Cómo editar y/o crear variables utilizando `mutate()`.
 
 ---
 
@@ -112,7 +106,11 @@ background-position: 100% 0%
 # Breve resumen
 
 Vimos que todas estas funciones para manipulación de dataframes siguen una 
-estructura similar, cada una se comporta como un "verbo" y es posible 
+estructura similar. 
+
+--
+
+Cada una se comporta como un *verbo* y es posible 
 conectar estas acciones con un operador llamado "**pipe**" (**%>%**).
 
 --
@@ -131,21 +129,7 @@ También vimos que los pipes funcionan de la siguiente manera:
 
     3) Se obtiene un dataframe como resultado de la aplicación de la acción.
 
---
 
-    En caso de existir otra acción a realizar
-
---
-
-    4) Se ejecuta la acción sobre el dataframe del punto 3. 
-
-    5) Se obtiene un dataframe como resultado de la aplicación de la acción 
-    del punto 4.
-
---
-
-Los puntos 4 y 5 se repiten mientras existan más funciones encadenadas, y 
-el punto 4 se ejecutaría sobre el dataframe obtenido de la acción anterior.
 
 ---
 
@@ -160,13 +144,16 @@ Un ejemplo: utilizando el siguiente dataframe...
 ```{r, warning=FALSE}
 df <- data.frame(x1 = c(1, 2, 3, 4),
                  x2 = c("perro", "gato", "caballo", "conejo"))
-print(df)
+print(df[1:2, ])
 ```
 
 --
 
-...filtrar aquellos registros donde la variable x2 tenga más 5 caracteres, y 
-luego ordenarla de manera descendente según el número de caracteres de x2.
+... crear una columna con el número de cracteres que tiene x2
+
+...filtrar aquellos registros con más de 5 caracteres
+
+...luego ordenar de manera descendente, según el número de caracteres
 
 --
 
@@ -201,7 +188,7 @@ entender como: "*si sucede..., haz..., de otro modo, haz...*".
 
 --
 
-También vimos que, a diferencia de la función de R base (`ifelse()`), la 
+A diferencia de la función de R base `ifelse()`, la 
 función `if_else()`, considera un argumento específico para aquellas 
 condiciones que no es posible evaluar si son *verdaderas* o *falsas* 
 (valores missing).
@@ -237,8 +224,7 @@ table(ene$glosa_sexo)
 
 --
 
-¿Es posible utilizar `if_else()` para crear variables en función a más de dos 
-categorías posibles?
+¿Es posible utilizar `if_else()` para crear variables con más categorías?
 
 --
 
@@ -246,16 +232,8 @@ categorías posibles?
 
 --
 
-Esto se puede realizar de dos maneras:
+Podemos usar varios `if_else()` consecutivamente
 
---
-
-- La aplicación de un `if_else()`, después de la aplicación de otro anterior.
-
---
-
-- La aplicación de un `if_else()`, dentro de otro `if_else()`, como aplicación 
-según valor de verdad.
 
 ---
 
@@ -279,7 +257,7 @@ ene <- ene %>%
     tramos_etarios = if_else(edad < 15,
                              "menores a 15",
                              ""),
-    tramos_etarios = if_else(edad %in% 15:30,
+    tramos_etarios = if_else(edad >= 15 & edad <= 30,
                              "entre 15 y 30 años",
                              tramos_etarios),
     tramos_etarios = if_else(edad > 30,
@@ -304,34 +282,21 @@ background-position: 100% 0%
   
 ## Uso de condicionales: `if_else()`
 
-```{r}
-# Ejemplo: método 2
-ene <- ene %>%
-  mutate(
-    tramos_etarios2 = if_else(edad < 15,
-                              "menores a 15",
-                              if_else(edad %in% 15:30,
-                                      "entre 15 y 30 años",
-                                      if_else(edad > 30,
-                                              "mayores de 30 años",
-                                              "")))
-    )
-```
-
---
-
-```{r}
-table(ene$tramos_etarios2, useNA = "always")
-```
-
---
-
-Como se puede apreciar, el primer método requiere el utilizar el valor previo 
-que toma la variable en la aplicación de las funciones posteriores.
+En cada paso, es necesario utilizar el valor previo
 
 --
 
 Si no se considera lo anterior, la variable creada no tendrá "historia".
+
+--
+
+¿Podemos hacerlo mejor?
+
+.center[
+<img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="400" />
+]
+
+
 
 ---
 
@@ -343,24 +308,16 @@ background-position: 100% 0%
   
 ## Uso de condicionales: `case_when()`
 
-¿Existe alguna otra función en R que nos permita realizar este tipo de 
-creaciones pero sin tener que repetir tantas veces la función?.
-
---
-
-Si, existe la función **`case_when()`**.
-
---
 
 Usando **case_when()**, el resultado anterior sería:
 
 ```{r}
 # Ejemplo: método 2
 ene <- ene %>%
-  mutate(tramos_etarios3 = case_when(edad < 15 ~ "menores a 15",
-                                     edad %in% 15:30 ~ "entre 15 y 30 años",
-                                     edad > 30 ~ "mayores de 30 años",
-                                     TRUE ~ "")
+  mutate(tramos_etarios3 = case_when(edad < 15               ~ "menores a 15",
+                                     edad >= 15 & edad <= 30 ~ "entre 15 y 30 años",
+                                     edad > 30               ~ "mayores de 30 años",
+                                     TRUE                    ~ "")
     )
 ```
 
@@ -392,22 +349,15 @@ dataframe %>%
 
 --
 
-Donde:
+Si la **primera condición es verdadera**, no se evalúa nada más
 
-- nv: corresponde a la nueva variable (o la variable editada).
+--
 
-- cond_1: primera condición que se evalúa.
+Si la **primera condición es falsa**, se evalúa la segunda
 
-- valor_1: valor que se asigna a "nv" en caso que "cond_1" sea verdadera.
+--
 
-- cond_2: en caso que cond_1 sea falsa, se evaluará el valor de verdad de la 
-condición 2.
-
-- valor_2: si se evaluó "cond_2", y es verdadera, se asignará a "nv" el valor 
-"valor_2".
-
-- En caso que cond_1 sea falsa, y cond_2 sea falsa, se asignará un valor 
-"missing" a "nv".
+Si ninguna de las condiciones es verdadera, se asigna NA
 
 ---
 
@@ -423,7 +373,7 @@ background-position: 100% 0%
 
 --
 
-- La *virgulilla* (~) tiene que se utilizada entre la condición 
+- La *virgulilla* (~) tiene que ser utilizada entre la condición 
 y el valor a asignar.
 
 --
@@ -435,7 +385,7 @@ y el valor a asignar.
     
 --
 
-- Los valores a asignar deben ser de la misma clase.
+- Los valores a asignar deben ser del mismo tipo
 
 ---
 
@@ -450,14 +400,13 @@ background-position: 100% 0%
 Un pequeño ejercicio: utilizando la base de la ene, genere las siguientes 
 variables, siguiendo el orden de las instrucciones:
 
-- **tramos1**: asígnele el valor 1 si la edad es menor que 15, el valor 2 si 
-la edad es menor que 31 y 3 si la edad es mayor a 30.
-
-- **tramos2**: asígnele el valor 1 si la edad es menor que 31, el valor 2 si 
-la edad es menor que 15 y 3 si la edad es mayor a 30.
+- **tramos1**: asigna el valor 1 si la edad es menor que 15, el valor 2 si 
+la edad es mayor o igual a 15 y menor o igual que 30 y el valor 3 si la edad es mayor a 30.
 
 Luego, utilizando la función `table()`, observe cuantos registros están 
-codificados por categoría para las variables "tramos1" y "tramos2".
+codificados por categoría para la variable "tramos1".
+
+
 
 ---
 
@@ -471,13 +420,10 @@ background-position: 100% 0%
 
 ```{r}
 ene <- ene %>%
-  mutate(tramos1 = case_when(edad < 15 ~ 1,
-                             edad < 31 ~ 2,
-                             edad > 30 ~ 3),
-         tramos2 = case_when(edad < 31 ~ 1,
-                             edad < 15 ~ 2,
-                             edad > 30 ~ 3)
-    )
+  mutate(tramos1 = case_when(edad <  15              ~ 1,
+                             edad >= 15 & edad <= 30 ~ 2,
+                             edad > 30               ~ 3))
+    
 ```
 
 --
@@ -486,11 +432,20 @@ ene <- ene %>%
 table(ene$tramos1, useNA = "always")
 ```
 
+
 --
 
-```{r}
-table(ene$tramos2, useNA = "always")
+**¿Qué pasa si la última condición se reemplaza por <= 200?**
+
+
+```{r, eval=FALSE}
+ene <- ene %>%
+  mutate(tramos1 = case_when(edad <  15              ~ 1,
+                             edad >= 15 & edad <= 30 ~ 2,
+                             edad <= 200             ~ 3)) #<<  
+
 ```
+
 
 ---
 
@@ -527,10 +482,13 @@ variable.
 
 --
 
-Estas funciones son muy útiles para múltiples objetivos, y cada una de estas 
-funciones actúa sobre todos los registros de un dataframe, pero... ¿cómo 
-podríamos hacer si queremos obtener el número de registros de un subconjunto 
-del dataframe?
+¿Qué podríamos hacer si queremos obtener la edad media de las mujeres?
+
+
+.center[
+<img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="200" />
+]
+
 
 ---
 
@@ -542,8 +500,8 @@ background-position: 100% 0%
 
 ## Agrupación de unidades
 
-Podríamos usar la función `filter()`, y aplicar la función `n()`. Pero, ¿si 
-queremos calcular el número de registros para dos o más subconjuntos de un 
+Podríamos usar la función `filter()` y luego la función `mean()`. Pero, ¿si 
+queremos calcular el número de registros para muchas categorías de un 
 dataframe?
 
 --
@@ -603,12 +561,13 @@ background-position: 100% 0%
 
 # Transformación de datos (2)
 
-## Agrupación de unidades
-
 Número de hombres
 
 ```{r}
-head(ene %>% filter(sexo == 1) %>% select(idrph, sexo, n_sexo), n = 3)
+ene %>%
+  filter(sexo == 1) %>% 
+  select(idrph, sexo, n_sexo) %>% 
+  slice(1:2)
 ```
 
 --
@@ -616,7 +575,10 @@ head(ene %>% filter(sexo == 1) %>% select(idrph, sexo, n_sexo), n = 3)
 Número de mujeres
 
 ```{r}
-head(ene %>% filter(sexo == 2) %>% select(idrph, sexo, n_sexo), n = 3)
+ene %>% 
+  filter(sexo == 2) %>%
+  select(idrph, sexo, n_sexo) %>% 
+  slice(1:2)
 ```
 
 ---
@@ -626,44 +588,6 @@ background-size: contain;
 background-position: 100% 0%
 
 # Transformación de datos (2)
-
-## Agrupación de unidades
-
-Retomemtos el ejercicio 3 de la primera sesión:
-
---
-
-Utilizando la base de guaguas, obtener el nombre más utilizado en chile en 
-todos los tiempos
-
---
-
-```{r}
-library(guaguas)
-head(
-guaguas %>%
-  group_by(nombre) %>%
-  mutate(total = sum(n)) %>%
-  arrange(desc(total)),
-n = 1
-)
-
-```
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Transformación de datos (2)
-
-## Agrupación de unidades
-
-Si queremos realizar una agrupación posterior a una agrupación previa, es 
-necesario "desagrupar" la agrupación previa, esto se realiza con `ungroup()`.
-
---
 
 - Función auxiliar **`slice()`**
 
@@ -681,6 +605,77 @@ Se puede extraer un registro o un conjunto de registros.
 Esta función se puede combinar con `group_by()`, y extraer un (o un conjunto) 
 registro de cada grupo.
 
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Transformación de datos (2)
+
+Retomemos el ejercicio 3 de la primera sesión:
+
+--
+
+Utilizando la base de guaguas, obtener el nombre más utilizado en Chile en 
+todos los tiempos
+
+--
+
+.pull-left[
+
+
+```{r}
+library(guaguas)
+guaguas %>%
+  group_by(nombre) %>%
+  mutate(total = sum(n)) %>%
+  arrange(desc(total)) %>% 
+  slice(1)
+
+```
+
+]
+
+.pull-right[
+
+<img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="200" />
+
+
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Transformación de datos (2)
+
+## Agrupación de unidades
+
+`group_by` sigue operando, hasta que se indique lo contrario 
+
+
+```{r, eval=F}
+guaguas %>%
+  group_by(nombre) %>%
+  mutate(total = sum(n)) %>% #<<
+  arrange(desc(total)) %>% #<<
+  slice(1) #<<
+
+```
+
+
+--
+
+Si queremos realizar una operación no agrupada, luego de haber usado `group_by`,
+debemos desagrupar con `ungroup`
+
+
 ---
 
 background-image: url("imagenes/fondo2.PNG")
@@ -692,13 +687,19 @@ background-position: 100% 0%
 ## Agrupación de unidades
 
 ```{r}
-# Ejemplo: utilizando la base guaguas, obtener el nombre más repetido por año.
 guaguas %>%
-  group_by(anio) %>%
-  arrange(desc(n)) %>%
-  slice(1) %>%
-  arrange(desc(anio))
+  group_by(nombre) %>%
+  mutate(total = sum(n)) %>%
+  arrange(desc(total)) %>% 
+  ungroup() %>%  #<<
+  select(nombre, total) %>% 
+  slice(1)
+
+
 ```
+
+Ahora sabemos que el nombre más común desde que se tiene registros es María  🤓🤓🤓😄
+
 
 ---
 
@@ -710,13 +711,11 @@ background-position: 100% 0%
 
 ## Cuadros de resumen
 
-Otra función que perfectamente se combina con `group_by()` es la función 
-`summarise()`.
+Un aliado natural de `group_by()` es `summarise()`.
 
 --
 
-Esta función crea una o más escalares resumiendo información de variables 
-existentes en un data frame.
+Esta función permite resumir variables existentes en un dataframe.
 
 --
 
@@ -911,19 +910,87 @@ Es útil para la presentación de cuadros de resumen con doble entrada.
 
 --
 
-Por ejemplo...
-
---
-
-```{r, eval=F}
+```{r, eval=T, echo=FALSE}
 library(tidyr)
 ene %>%
-  group_by(region, b1) %>%
-  summarise(n = n()) %>%
-  pivot_wider(names_from = b1,
-              names_prefix = "x" ,
-              values_from = n)
+  group_by(region, sexo) %>%
+  summarise(n = n()) %>% 
+  ungroup() %>% 
+  slice(1:6) %>% 
+  mutate(sexo = if_else(sexo == 1, "hombre", "mujer")) %>% 
+  knitr::kable(format = "html")
 ```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+## Función `pivot_wider()`
+
+```{r, echo=F, fig.align = "center"}
+library(tidyr)
+ene %>%
+  group_by(region, sexo) %>%
+  summarise(n = n()) %>%
+  mutate(sexo = if_else(sexo == 1, "hombre", "mujer")) %>% 
+  pivot_wider(names_from = sexo,
+              values_from = n) %>% 
+  ungroup() %>% 
+  slice(1:3) %>% 
+  knitr::kable(format = "html")
+```
+
+
+### Ahora vemos las categorías de sexo hacia la derecha
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+## Función `pivot_wider()`
+
+
+```{r echo=FALSE, fig.align = "center"}
+ene %>%
+  group_by(sexo, est_conyugal) %>%
+  summarise(n = n()) %>% 
+  knitr::kable(format = "html")
+
+
+
+```
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+## Función `pivot_wider()`
+
+
+```{r echo=FALSE, fig.align = "center"}
+ene %>% 
+  group_by(sexo, est_conyugal) %>%
+  summarise(n = n()) %>% 
+  pivot_wider(names_from = est_conyugal, 
+              values_from = n,
+              names_prefix = "estado") %>% 
+  knitr::kable(format = "html") 
+  
+
+```
+
+### Pasamos de un formato largo a uno ancho
+
+
 
 ---
 
@@ -935,13 +1002,71 @@ background-position: 100% 0%
 
 ## Función `pivot_wider()`
 
-```{r, echo=F}
-library(tidyr)
+
+```{r, eval=F}
 ene %>%
-  group_by(region, b1) %>%
+  group_by(region, sexo) %>%
   summarise(n = n()) %>%
-  pivot_wider(names_from = b1, names_prefix = "x" , values_from = n)
+  mutate(sexo = if_else(sexo == 1, "hombre", "mujer")) %>% 
+  pivot_wider(names_from = sexo, #<<
+              values_from = n) #<<
+
 ```
+
+- *names_from*: categorías que se quiere convertir en columnas
+- *vaues_from*: columna desde la cual extraer los valores
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+En algunos casos, no contamos con una variable que contenga texto, para hacer el "pivoteo"
+
+```{r, echo=F}
+ene %>%
+  group_by(region, sexo) %>%
+  summarise(n = n())
+
+```
+
+--
+
+En esos casos, podemos usar el parámetro **names_prefix**
+
+```{r, eval=FALSE}
+ene %>%
+  group_by(region, sexo) %>%
+  summarise(n = n()) %>%
+  pivot_wider(names_from = sexo,
+              values_from = n,
+              names_prefix = "sexo" ) #<<
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+Efecto de incluir **names_from**
+
+```{r, echo=FALSE}
+ene %>%
+  group_by(region, sexo) %>%
+  summarise(n = n()) %>%
+  pivot_wider(names_from = sexo,
+              values_from = n,
+              names_prefix = "sexo" ) 
+
+```
+
+
 
 ---
 
@@ -974,7 +1099,10 @@ Ejemplo de `pivot_longer()`:
 df1 <- data.frame(region = c(1, 2),
                   hombres = c(100, 200),
                   mujeres = c(50, 300))
+df1
 ```
+
+
 
 ```{r,eval=F}
 df1 %>%
@@ -1000,21 +1128,15 @@ Los argumentos más comunes de esta función son:
 
 --
 
-- El primer argumento es el dataframe sobre el cual se aplicará la función.
+- *cols*: columnas a las que se le aplicará la operación
 
 --
 
-- El segundo argumento define a las columnas dentro del dataframe que se le 
-aplicará la acción.
+- *names_to*: indica el nombre de la variable que será creada para "guardar" los
+nombres de las categorías.
 
---
 
-- El tercer argumento (*names_to*), indica el nombre de la variable que será 
-creada para "guardar" los nombres de las categorías.
-
---
-
-- El cuarto argumento (*values_to*), indica el nombre de la variable que será 
+- *values_to*: indica el nombre de la variable que será 
 creada para "guardar" los valores asociados a las categorías.
 
 ---
@@ -1027,8 +1149,8 @@ background-position: 100% 0%
 
 ## Pequeño ejercicio
 
-Utilizando la base *ene*, cálcule el número de registros según grupo 
-ocupacional (b1), por mes de encuestaje (mes_encuesta).
+Utilizando la base *ene*, calcule el número de registros según grupo 
+ocupacional (b1), por mes (mes_encuesta).
 
 Presente el resultado como un cuadro de resumen, con los grupos ocupacionales 
 en las filas y los meses de encuestaje en las columnas.
@@ -1052,175 +1174,6 @@ ene %>%
               values_from = n)
 ```
 
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Antes de terminar, veremos una pizca sobre el uso de expresiones regulares con 
-la función `filter()`.
-
---
-
-En la sesión anterior surgió la duda sobre si es posible filtrar registros 
-según características de los valores de una variable, por ejemplo:
-
-- Filtrar todos aquellos registros que comienzan con la letra "x".
-
-- Filtrar todos aquellos registros que terminan con "z".
-
---
-
-Para lo anterior existen las expresiones regulares (**regex**).
-
---
-
-Una expresión regular es una secuencia de caracteres que conforma un patrón 
-de búsqueda (*wikipedia*).
-
---
-
-Las regex resultan útiles porque permiten describir patrones en ellas a través 
-de un lenguaje conciso.
-
---
-
-**Importante**: cuando veas por primera vez una regex, te parecerá que un gato 
-caminó sobre tu teclado.
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Los tipos de datos con los que trabajaremos estás regex son datos de tipo 
-**string**.
-
---
-
-El paquete que utilizaremos se llama **`stringr`**, y forma parte del universo 
-de **`tidyverse`**.
-
---
-
-Todas las funciones de **`stringr`**, comienzan con el prefijo "**str_**".
-
---
-
-Para nuestro objetivo, utilizaremos la función `str_detect()`
-
---
-
-Los argumentos que utiliza esta función son:
-
---
-
-- La string sobre la cuál se aplicará la función.
-
---
-
-- El patrón que se buscará (aquí se utilizan las regex).
-
---
-
-Para más información sobre **regex** puede revisar 
-[`aqui`](https://www.diegocalvo.es/expresiones-regulares-en-r/), 
-[`aqui`](https://rpubs.com/ydmarinb/429756) y 
-[`aqui`](https://stringr.tidyverse.org/articles/regular-expressions.html), 
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Ejemplo 1: utilizando la base de guaguas, obtener los tres nombres más 
-repetidos cuyo nombre comience con la letra z.
-
-```{r}
-library(stringr)
-guaguas %>%
-  filter(str_detect(nombre, "^Z")) %>%
-  group_by(nombre) %>%
-  summarise(total = sum(n)) %>%
-  arrange(desc(total)) %>%
-  slice(1:3)
-```
-
---
-
-Algunos operadores importantes a conocer son:
-
-- **`^a`**: se utiliza para indicar que la cadena inicia con "a".
-
-- **`a$`**: se utiliza para indicar que la cadena termina con "a".
-
-- **`a*`**: se utiliza para indicar que la cadena posee "a", cero o más veces.
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Ejemplo 2: utilizando la base de guaguas, obtener los nombres que comiencen 
-con la letra "I" y terminen con la letra "o".
-
-```{r}
-library(stringr)
-guaguas %>%
-  filter(str_detect(nombre, "^I.*o$")) %>%
-  group_by(nombre) %>%
-  summarise(total = sum(n)) %>%
-  arrange(desc(total))
-```
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-La función `str_detect()` también se puede usar con `case_when()`.
-
-- Utilice la base guaguas.
-
-- Filtre los registros de mujeres (sexo == "F") del año de su nacimiento.
-
-- Genere una variable que indique si el nombre termina con a ("a$"), o no.
-
-- Obtenga el número de nombres que terminan con a y cuantos que no.
-
-```{r}
-guaguas %>%
-  filter(sexo == "F" & anio == 1990) %>%
-  mutate(termina_a = case_when(str_detect(nombre, "a$") ~ 1,
-                               TRUE ~ 0)) %>%
-  group_by(termina_a) %>%
-  summarise(n = n())
-```
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Ejercicio final
-
-
-...los veremos en R.
 
 ---
 
@@ -1230,12 +1183,7 @@ background-position: 100% 0%
 
 # Ejercicios para la 🏠
 
-- Importar la base **ene-2019-11.csv**. Las siguientes tareas realicelas sobre 
-la base ene.
-
-- Generar un cuadro de resumen que muestre en las filas la categoría de rama 
-de actividad económica (**b14_rev4cl_canes**) y en las columnas los grupos 
-ocupacionales (**b1**).
+- Importar la base **ene-2019-11.csv**. 
 
 - Cree las siguientes variables:
 
@@ -1254,6 +1202,11 @@ que tomará el valor de: total de ocu / total de pet * 100
 
 (De esta forma se obtiene la tasa de ocupación, pero no será equivalente a 
 la oficial pues no se están considerando los factores de expansión.).
+
+- Generar un cuadro de resumen que muestre en las filas la categoría de rama 
+de actividad económica (**b14_rev4cl_canes**) y en las columnas los grupos 
+ocupacionales (**b1**).
+
 ---
 
 background-image: url("imagenes/fondo2.PNG")

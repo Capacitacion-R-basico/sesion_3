@@ -4,7 +4,7 @@
     <title>Capacitación en R y herramientas de productividad</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2020-11-04" />
+    <meta name="date" content="2021-03-29" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -24,7 +24,7 @@ class: center, middle
 
 ## Procesamiento de bases de datos (2)
 
-### Noviembre 2020
+### Abril 2021
 
 
 
@@ -71,29 +71,23 @@ fuentes usando paquetes como: **`haven`**, **`readr`** y **`readxl`**.
 
 --
 
-- Cómo seleccionar variables dentro de un dataframe, ya sea nombrándolas 
-explícitamente, de manera inversa (con un signo -), o con funciones axiliares. 
-La función de selección vista fue `select()`.
+- Cómo seleccionar variables dentro de un dataframe usando `select()`.
 
 --
 
-- Cómo renombrar variables dentro de un dataframe, utilizando la función 
-`rename()`.
+- Cómo renombrar variables dentro de un dataframe, utilizando `rename()`.
 
 --
 
-- Cómo filtrar variables de una dataframe, utilizando la función `filter()`. 
-Vimos que era posible filtrar por una o más condiciones en forma conjunta.
+- Cómo filtrar variables de una dataframe, utilizando `filter()`. 
 
 --
 
-- Cómo ordenar las filas de un dataframe, a partir de una o más columnas, ya 
-sea de manera ascendente o descendente, utilizando la función `arrange()`.
+- Cómo ordenar las filas de un dataframe usando `arrange()`.
 
 --
 
-- Cómo editar variables de un dataframe y/o crear una nueva, utilizando la 
-función `mutate()`.
+- Cómo editar y/o crear variables utilizando `mutate()`.
 
 ---
 
@@ -104,7 +98,11 @@ background-position: 100% 0%
 # Breve resumen
 
 Vimos que todas estas funciones para manipulación de dataframes siguen una 
-estructura similar, cada una se comporta como un "verbo" y es posible 
+estructura similar. 
+
+--
+
+Cada una se comporta como un *verbo* y es posible 
 conectar estas acciones con un operador llamado "**pipe**" (**%&gt;%**).
 
 --
@@ -123,21 +121,7 @@ También vimos que los pipes funcionan de la siguiente manera:
 
     3) Se obtiene un dataframe como resultado de la aplicación de la acción.
 
---
 
-    En caso de existir otra acción a realizar
-
---
-
-    4) Se ejecuta la acción sobre el dataframe del punto 3. 
-
-    5) Se obtiene un dataframe como resultado de la aplicación de la acción 
-    del punto 4.
-
---
-
-Los puntos 4 y 5 se repiten mientras existan más funciones encadenadas, y 
-el punto 4 se ejecutaría sobre el dataframe obtenido de la acción anterior.
 
 ---
 
@@ -153,21 +137,22 @@ Un ejemplo: utilizando el siguiente dataframe...
 ```r
 df &lt;- data.frame(x1 = c(1, 2, 3, 4),
                  x2 = c("perro", "gato", "caballo", "conejo"))
-print(df)
+print(df[1:2, ])
 ```
 
 ```
-##   x1      x2
-## 1  1   perro
-## 2  2    gato
-## 3  3 caballo
-## 4  4  conejo
+##   x1    x2
+## 1  1 perro
+## 2  2  gato
 ```
 
 --
 
-...filtrar aquellos registros donde la variable x2 tenga más 5 caracteres, y 
-luego ordenarla de manera descendente según el número de caracteres de x2.
+... crear una columna con el número de cracteres que tiene x2
+
+...filtrar aquellos registros con más de 5 caracteres
+
+...luego ordenar de manera descendente, según el número de caracteres
 
 --
 
@@ -209,7 +194,7 @@ entender como: "*si sucede..., haz..., de otro modo, haz...*".
 
 --
 
-También vimos que, a diferencia de la función de R base (`ifelse()`), la 
+A diferencia de la función de R base `ifelse()`, la 
 función `if_else()`, considera un argumento específico para aquellas 
 condiciones que no es posible evaluar si son *verdaderas* o *falsas* 
 (valores missing).
@@ -253,8 +238,7 @@ table(ene$glosa_sexo)
 
 --
 
-¿Es posible utilizar `if_else()` para crear variables en función a más de dos 
-categorías posibles?
+¿Es posible utilizar `if_else()` para crear variables con más categorías?
 
 --
 
@@ -262,16 +246,8 @@ categorías posibles?
 
 --
 
-Esto se puede realizar de dos maneras:
+Podemos usar varios `if_else()` consecutivamente
 
---
-
-- La aplicación de un `if_else()`, después de la aplicación de otro anterior.
-
---
-
-- La aplicación de un `if_else()`, dentro de otro `if_else()`, como aplicación 
-según valor de verdad.
 
 ---
 
@@ -296,7 +272,7 @@ ene &lt;- ene %&gt;%
     tramos_etarios = if_else(edad &lt; 15,
                              "menores a 15",
                              ""),
-    tramos_etarios = if_else(edad %in% 15:30,
+    tramos_etarios = if_else(edad &gt;= 15 &amp; edad &lt;= 30,
                              "entre 15 y 30 años",
                              tramos_etarios),
     tramos_etarios = if_else(edad &gt; 30,
@@ -328,42 +304,21 @@ background-position: 100% 0%
   
 ## Uso de condicionales: `if_else()`
 
-
-```r
-# Ejemplo: método 2
-ene &lt;- ene %&gt;%
-  mutate(
-    tramos_etarios2 = if_else(edad &lt; 15,
-                              "menores a 15",
-                              if_else(edad %in% 15:30,
-                                      "entre 15 y 30 años",
-                                      if_else(edad &gt; 30,
-                                              "mayores de 30 años",
-                                              "")))
-    )
-```
-
---
-
-
-```r
-table(ene$tramos_etarios2, useNA = "always")
-```
-
-```
-## 
-## entre 15 y 30 años mayores de 30 años       menores a 15               &lt;NA&gt; 
-##              21201              56756              18283                  0
-```
-
---
-
-Como se puede apreciar, el primer método requiere el utilizar el valor previo 
-que toma la variable en la aplicación de las funciones posteriores.
+En cada paso, es necesario utilizar el valor previo
 
 --
 
 Si no se considera lo anterior, la variable creada no tendrá "historia".
+
+--
+
+¿Podemos hacerlo mejor?
+
+.center[
+&lt;img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="400" /&gt;
+]
+
+
 
 ---
 
@@ -375,14 +330,6 @@ background-position: 100% 0%
   
 ## Uso de condicionales: `case_when()`
 
-¿Existe alguna otra función en R que nos permita realizar este tipo de 
-creaciones pero sin tener que repetir tantas veces la función?.
-
---
-
-Si, existe la función **`case_when()`**.
-
---
 
 Usando **case_when()**, el resultado anterior sería:
 
@@ -390,10 +337,10 @@ Usando **case_when()**, el resultado anterior sería:
 ```r
 # Ejemplo: método 2
 ene &lt;- ene %&gt;%
-  mutate(tramos_etarios3 = case_when(edad &lt; 15 ~ "menores a 15",
-                                     edad %in% 15:30 ~ "entre 15 y 30 años",
-                                     edad &gt; 30 ~ "mayores de 30 años",
-                                     TRUE ~ "")
+  mutate(tramos_etarios3 = case_when(edad &lt; 15               ~ "menores a 15",
+                                     edad &gt;= 15 &amp; edad &lt;= 30 ~ "entre 15 y 30 años",
+                                     edad &gt; 30               ~ "mayores de 30 años",
+                                     TRUE                    ~ "")
     )
 ```
 
@@ -433,22 +380,15 @@ dataframe %&gt;%
 
 --
 
-Donde:
+Si la **primera condición es verdadera**, no se evalúa nada más
 
-- nv: corresponde a la nueva variable (o la variable editada).
+--
 
-- cond_1: primera condición que se evalúa.
+Si la **primera condición es falsa**, se evalúa la segunda
 
-- valor_1: valor que se asigna a "nv" en caso que "cond_1" sea verdadera.
+--
 
-- cond_2: en caso que cond_1 sea falsa, se evaluará el valor de verdad de la 
-condición 2.
-
-- valor_2: si se evaluó "cond_2", y es verdadera, se asignará a "nv" el valor 
-"valor_2".
-
-- En caso que cond_1 sea falsa, y cond_2 sea falsa, se asignará un valor 
-"missing" a "nv".
+Si ninguna de las condiciones es verdadera, se asigna NA
 
 ---
 
@@ -464,7 +404,7 @@ background-position: 100% 0%
 
 --
 
-- La *virgulilla* (~) tiene que se utilizada entre la condición 
+- La *virgulilla* (~) tiene que ser utilizada entre la condición 
 y el valor a asignar.
 
 --
@@ -476,7 +416,7 @@ y el valor a asignar.
     
 --
 
-- Los valores a asignar deben ser de la misma clase.
+- Los valores a asignar deben ser del mismo tipo
 
 ---
 
@@ -491,14 +431,13 @@ background-position: 100% 0%
 Un pequeño ejercicio: utilizando la base de la ene, genere las siguientes 
 variables, siguiendo el orden de las instrucciones:
 
-- **tramos1**: asígnele el valor 1 si la edad es menor que 15, el valor 2 si 
-la edad es menor que 31 y 3 si la edad es mayor a 30.
-
-- **tramos2**: asígnele el valor 1 si la edad es menor que 31, el valor 2 si 
-la edad es menor que 15 y 3 si la edad es mayor a 30.
+- **tramos1**: asigna el valor 1 si la edad es menor que 15, el valor 2 si 
+la edad es mayor o igual a 15 y menor o igual que 30 y el valor 3 si la edad es mayor a 30.
 
 Luego, utilizando la función `table()`, observe cuantos registros están 
-codificados por categoría para las variables "tramos1" y "tramos2".
+codificados por categoría para la variable "tramos1".
+
+
 
 ---
 
@@ -513,13 +452,9 @@ background-position: 100% 0%
 
 ```r
 ene &lt;- ene %&gt;%
-  mutate(tramos1 = case_when(edad &lt; 15 ~ 1,
-                             edad &lt; 31 ~ 2,
-                             edad &gt; 30 ~ 3),
-         tramos2 = case_when(edad &lt; 31 ~ 1,
-                             edad &lt; 15 ~ 2,
-                             edad &gt; 30 ~ 3)
-    )
+  mutate(tramos1 = case_when(edad &lt;  15              ~ 1,
+                             edad &gt;= 15 &amp; edad &lt;= 30 ~ 2,
+                             edad &gt; 30               ~ 3))
 ```
 
 --
@@ -535,18 +470,20 @@ table(ene$tramos1, useNA = "always")
 ## 18283 21201 56756     0
 ```
 
+
 --
+
+**¿Qué pasa si la última condición se reemplaza por &lt;= 200?**
+
 
 
 ```r
-table(ene$tramos2, useNA = "always")
+ene &lt;- ene %&gt;%
+  mutate(tramos1 = case_when(edad &lt;  15              ~ 1,
+                             edad &gt;= 15 &amp; edad &lt;= 30 ~ 2,
+*                            edad &lt;= 200             ~ 3))
 ```
 
-```
-## 
-##     1     3  &lt;NA&gt; 
-## 39484 56756     0
-```
 
 ---
 
@@ -583,10 +520,13 @@ variable.
 
 --
 
-Estas funciones son muy útiles para múltiples objetivos, y cada una de estas 
-funciones actúa sobre todos los registros de un dataframe, pero... ¿cómo 
-podríamos hacer si queremos obtener el número de registros de un subconjunto 
-del dataframe?
+¿Qué podríamos hacer si queremos obtener la edad media de las mujeres?
+
+
+.center[
+&lt;img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="200" /&gt;
+]
+
 
 ---
 
@@ -598,8 +538,8 @@ background-position: 100% 0%
 
 ## Agrupación de unidades
 
-Podríamos usar la función `filter()`, y aplicar la función `n()`. Pero, ¿si 
-queremos calcular el número de registros para dos o más subconjuntos de un 
+Podríamos usar la función `filter()` y luego la función `mean()`. Pero, ¿si 
+queremos calcular el número de registros para muchas categorías de un 
 dataframe?
 
 --
@@ -667,23 +607,23 @@ background-position: 100% 0%
 
 # Transformación de datos (2)
 
-## Agrupación de unidades
-
 Número de hombres
 
 
 ```r
-head(ene %&gt;% filter(sexo == 1) %&gt;% select(idrph, sexo, n_sexo), n = 3)
+ene %&gt;%
+  filter(sexo == 1) %&gt;% 
+  select(idrph, sexo, n_sexo) %&gt;% 
+  slice(1:2)
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 2 x 3
 ## # Groups:   sexo [1]
 ##     idrph  sexo n_sexo
 ##     &lt;int&gt; &lt;int&gt;  &lt;int&gt;
 ## 1  808409     1  46064
 ## 2 1100843     1  46064
-## 3 1100862     1  46064
 ```
 
 --
@@ -692,17 +632,19 @@ Número de mujeres
 
 
 ```r
-head(ene %&gt;% filter(sexo == 2) %&gt;% select(idrph, sexo, n_sexo), n = 3)
+ene %&gt;% 
+  filter(sexo == 2) %&gt;%
+  select(idrph, sexo, n_sexo) %&gt;% 
+  slice(1:2)
 ```
 
 ```
-## # A tibble: 3 x 3
+## # A tibble: 2 x 3
 ## # Groups:   sexo [1]
 ##     idrph  sexo n_sexo
 ##     &lt;int&gt; &lt;int&gt;  &lt;int&gt;
 ## 1  808410     2  50176
 ## 2 1100844     2  50176
-## 3 1100849     2  50176
 ```
 
 ---
@@ -712,52 +654,6 @@ background-size: contain;
 background-position: 100% 0%
 
 # Transformación de datos (2)
-
-## Agrupación de unidades
-
-Retomemtos el ejercicio 3 de la primera sesión:
-
---
-
-Utilizando la base de guaguas, obtener el nombre más utilizado en chile en 
-todos los tiempos
-
---
-
-
-```r
-library(guaguas)
-head(
-guaguas %&gt;%
-  group_by(nombre) %&gt;%
-  mutate(total = sum(n)) %&gt;%
-  arrange(desc(total)),
-n = 1
-)
-```
-
-```
-## # A tibble: 1 x 6
-## # Groups:   nombre [1]
-##    anio sexo  nombre     n proporcion  total
-##   &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;  &lt;int&gt;      &lt;dbl&gt;  &lt;int&gt;
-## 1  1920 F     María   2128      0.105 959108
-```
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Transformación de datos (2)
-
-## Agrupación de unidades
-
-Si queremos realizar una agrupación posterior a una agrupación previa, es 
-necesario "desagrupar" la agrupación previa, esto se realiza con `ungroup()`.
-
---
 
 - Función auxiliar **`slice()`**
 
@@ -775,6 +671,95 @@ Se puede extraer un registro o un conjunto de registros.
 Esta función se puede combinar con `group_by()`, y extraer un (o un conjunto) 
 registro de cada grupo.
 
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Transformación de datos (2)
+
+Retomemos el ejercicio 3 de la primera sesión:
+
+--
+
+Utilizando la base de guaguas, obtener el nombre más utilizado en Chile en 
+todos los tiempos
+
+--
+
+.pull-left[
+
+
+
+```r
+library(guaguas)
+guaguas %&gt;%
+  group_by(nombre) %&gt;%
+  mutate(total = sum(n)) %&gt;%
+  arrange(desc(total)) %&gt;% 
+  slice(1)
+```
+
+```
+## # A tibble: 2,871 x 6
+## # Groups:   nombre [2,871]
+##     anio sexo  nombre       n proporcion total
+##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    &lt;int&gt;      &lt;dbl&gt; &lt;int&gt;
+##  1  1964 M     Aaron       22  0.0000758  6281
+##  2  2005 M     Aarón       26  0.000109   1673
+##  3  2010 F     Abby        15  0.0000571   313
+##  4  2009 M     Abdiel      17  0.0000641   519
+##  5  1928 M     Abdón       22  0.000406   1159
+##  6  1921 M     Abel        45  0.00201    9017
+##  7  1921 M     Abelardo    19  0.000847   3383
+##  8  1942 F     Abelina     19  0.000138    133
+##  9  1931 M     Abelino     16  0.000296    441
+## 10  1950 F     Abigail     15  0.0000873  6894
+## # ... with 2,861 more rows
+```
+
+]
+
+.pull-right[
+
+&lt;img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="200" /&gt;
+
+
+]
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Transformación de datos (2)
+
+## Agrupación de unidades
+
+`group_by` sigue operando, hasta que se indique lo contrario 
+
+
+
+```r
+guaguas %&gt;%
+  group_by(nombre) %&gt;%
+* mutate(total = sum(n)) %&gt;%
+* arrange(desc(total)) %&gt;%
+* slice(1)
+```
+
+
+--
+
+Si queremos realizar una operación no agrupada, luego de haber usado `group_by`,
+debemos desagrupar con `ungroup`
+
+
 ---
 
 background-image: url("imagenes/fondo2.PNG")
@@ -787,31 +772,24 @@ background-position: 100% 0%
 
 
 ```r
-# Ejemplo: utilizando la base guaguas, obtener el nombre más repetido por año.
 guaguas %&gt;%
-  group_by(anio) %&gt;%
-  arrange(desc(n)) %&gt;%
-  slice(1) %&gt;%
-  arrange(desc(anio))
+  group_by(nombre) %&gt;%
+  mutate(total = sum(n)) %&gt;%
+  arrange(desc(total)) %&gt;% 
+* ungroup() %&gt;%
+  select(nombre, total) %&gt;% 
+  slice(1)
 ```
 
 ```
-## # A tibble: 100 x 5
-## # Groups:   anio [100]
-##     anio sexo  nombre       n proporcion
-##    &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;    &lt;int&gt;      &lt;dbl&gt;
-##  1  2019 M     Mateo     4152     0.0183
-##  2  2018 M     Mateo     4468     0.0185
-##  3  2017 M     Mateo     4736     0.0199
-##  4  2016 M     Agustín   4300     0.0174
-##  5  2015 M     Agustín   5355     0.0206
-##  6  2014 M     Agustín   5903     0.0222
-##  7  2013 M     Agustín   6518     0.0255
-##  8  2012 M     Agustín   6346     0.0250
-##  9  2011 M     Benjamín  5471     0.0212
-## 10  2010 M     Benjamín  6021     0.0229
-## # ... with 90 more rows
+## # A tibble: 1 x 2
+##   nombre  total
+##   &lt;chr&gt;   &lt;int&gt;
+## 1 María  959108
 ```
+
+Ahora sabemos que el nombre más común desde que se tiene registros es María  🤓🤓🤓😄
+
 
 ---
 
@@ -823,13 +801,11 @@ background-position: 100% 0%
 
 ## Cuadros de resumen
 
-Otra función que perfectamente se combina con `group_by()` es la función 
-`summarise()`.
+Un aliado natural de `group_by()` es `summarise()`.
 
 --
 
-Esta función crea una o más escalares resumiendo información de variables 
-existentes en un data frame.
+Esta función permite resumir variables existentes en un dataframe.
 
 --
 
@@ -1065,20 +1041,229 @@ Es útil para la presentación de cuadros de resumen con doble entrada.
 
 --
 
-Por ejemplo...
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; region &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; sexo &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; hombre &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1525 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; mujer &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1551 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; hombre &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1609 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; mujer &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1681 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; hombre &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1379 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; mujer &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1461 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
---
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+## Función `pivot_wider()`
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; region &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; hombre &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; mujer &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1525 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1551 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1609 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1681 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1379 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1461 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 
 
-```r
-library(tidyr)
-ene %&gt;%
-  group_by(region, b1) %&gt;%
-  summarise(n = n()) %&gt;%
-  pivot_wider(names_from = b1,
-              names_prefix = "x" ,
-              values_from = n)
-```
+### Ahora vemos las categorías de sexo hacia la derecha
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+## Función `pivot_wider()`
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; sexo &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; est_conyugal &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9481 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13669 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6049 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13703 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1066 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1504 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 592 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8821 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13608 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6099 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14284 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3515 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2638 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1211 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+## Función `pivot_wider()`
+
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; sexo &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estado0 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estado1 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estado2 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estado3 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estado4 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estado5 &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; estado6 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9481 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13669 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6049 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13703 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1066 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1504 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 592 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8821 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 13608 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6099 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 14284 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3515 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2638 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1211 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+### Pasamos de un formato largo a uno ancho
+
+
 
 ---
 
@@ -1091,28 +1276,97 @@ background-position: 100% 0%
 ## Función `pivot_wider()`
 
 
+
+```r
+ene %&gt;%
+  group_by(region, sexo) %&gt;%
+  summarise(n = n()) %&gt;%
+  mutate(sexo = if_else(sexo == 1, "hombre", "mujer")) %&gt;% 
+* pivot_wider(names_from = sexo,
+*             values_from = n)
 ```
-## # A tibble: 16 x 12
+
+- *names_from*: categorías que se quiere convertir en columnas
+- *vaues_from*: columna desde la cual extraer los valores
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+En algunos casos, no contamos con una variable que contenga texto, para hacer el "pivoteo"
+
+
+```
+## # A tibble: 32 x 3
 ## # Groups:   region [16]
-##    region    x1    x2    x3    x4    x5    x6    x7    x8    x9   x10   xNA
-##     &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt; &lt;int&gt;
-##  1      1    42   143   168    97   327    48   191   130   172    29  1729
-##  2      2    46   204   206    89   313     9   223   201   189     1  1809
-##  3      3    24   114   184    64   312    26   164   142   220    NA  1590
-##  4      4    37   196   245    69   602   196   292   222   687     1  3259
-##  5      5   125   663   720   216  1232   180   675   459  1118    32  6997
-##  6      6    41   226   246    95   498   111   285   208   838     2  3117
-##  7      7    35   205   252    96   605   190   340   243   974     4  3535
-##  8      8    61   433   479   171   890   150   552   338   838    16  5874
-##  9      9    38   237   220    60   445   293   268   136   489     7  2983
-## 10     10    60   285   273   163   619   376   413   256   809    23  4140
-## 11     11    37   158   184    51   314    95   206   106   279    11  1365
-## 12     12    71   163   161    62   211    33   135    89   133    43  1044
-## 13     13   409  1432  1230   522  1957   124  1032   680  1658    16 10491
-## 14     14    23   187   155    47   296   165   208   137   377     5  1879
-## 15     15    30   154   140    83   355   138   136   129   338    13  1960
-## 16     16    20   144   131    30   239    69   174    91   302     1  1612
+##    region  sexo     n
+##     &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1      1     1  1525
+##  2      1     2  1551
+##  3      2     1  1609
+##  4      2     2  1681
+##  5      3     1  1379
+##  6      3     2  1461
+##  7      4     1  2737
+##  8      4     2  3069
+##  9      5     1  5954
+## 10      5     2  6463
+## # ... with 22 more rows
 ```
+
+--
+
+En esos casos, podemos usar el parámetro **names_prefix**
+
+
+```r
+ene %&gt;%
+  group_by(region, sexo) %&gt;%
+  summarise(n = n()) %&gt;%
+  pivot_wider(names_from = sexo,
+              values_from = n,
+*             names_prefix = "sexo" )
+```
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Tidy data
+
+Efecto de incluir **names_from**
+
+
+```
+## # A tibble: 16 x 3
+## # Groups:   region [16]
+##    region sexo1 sexo2
+##     &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##  1      1  1525  1551
+##  2      2  1609  1681
+##  3      3  1379  1461
+##  4      4  2737  3069
+##  5      5  5954  6463
+##  6      6  2708  2959
+##  7      7  3098  3381
+##  8      8  4601  5201
+##  9      9  2457  2719
+## 10     10  3635  3782
+## 11     11  1371  1435
+## 12     12  1064  1081
+## 13     13  9234 10317
+## 14     14  1666  1813
+## 15     15  1687  1789
+## 16     16  1339  1474
+```
+
+
 
 ---
 
@@ -1146,7 +1400,16 @@ Ejemplo de `pivot_longer()`:
 df1 &lt;- data.frame(region = c(1, 2),
                   hombres = c(100, 200),
                   mujeres = c(50, 300))
+df1
 ```
+
+```
+##   region hombres mujeres
+## 1      1     100      50
+## 2      2     200     300
+```
+
+
 
 
 ```r
@@ -1179,21 +1442,15 @@ Los argumentos más comunes de esta función son:
 
 --
 
-- El primer argumento es el dataframe sobre el cual se aplicará la función.
+- *cols*: columnas a las que se le aplicará la operación
 
 --
 
-- El segundo argumento define a las columnas dentro del dataframe que se le 
-aplicará la acción.
+- *names_to*: indica el nombre de la variable que será creada para "guardar" los
+nombres de las categorías.
 
---
 
-- El tercer argumento (*names_to*), indica el nombre de la variable que será 
-creada para "guardar" los nombres de las categorías.
-
---
-
-- El cuarto argumento (*values_to*), indica el nombre de la variable que será 
+- *values_to*: indica el nombre de la variable que será 
 creada para "guardar" los valores asociados a las categorías.
 
 ---
@@ -1206,8 +1463,8 @@ background-position: 100% 0%
 
 ## Pequeño ejercicio
 
-Utilizando la base *ene*, cálcule el número de registros según grupo 
-ocupacional (b1), por mes de encuestaje (mes_encuesta).
+Utilizando la base *ene*, calcule el número de registros según grupo 
+ocupacional (b1), por mes (mes_encuesta).
 
 Presente el resultado como un cuadro de resumen, con los grupos ocupacionales 
 en las filas y los meses de encuestaje en las columnas.
@@ -1250,209 +1507,6 @@ ene %&gt;%
 ## 11    NA  15990  18478  18916
 ```
 
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Antes de terminar, veremos una pizca sobre el uso de expresiones regulares con 
-la función `filter()`.
-
---
-
-En la sesión anterior surgió la duda sobre si es posible filtrar registros 
-según características de los valores de una variable, por ejemplo:
-
-- Filtrar todos aquellos registros que comienzan con la letra "x".
-
-- Filtrar todos aquellos registros que terminan con "z".
-
---
-
-Para lo anterior existen las expresiones regulares (**regex**).
-
---
-
-Una expresión regular es una secuencia de caracteres que conforma un patrón 
-de búsqueda (*wikipedia*).
-
---
-
-Las regex resultan útiles porque permiten describir patrones en ellas a través 
-de un lenguaje conciso.
-
---
-
-**Importante**: cuando veas por primera vez una regex, te parecerá que un gato 
-caminó sobre tu teclado.
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Los tipos de datos con los que trabajaremos estás regex son datos de tipo 
-**string**.
-
---
-
-El paquete que utilizaremos se llama **`stringr`**, y forma parte del universo 
-de **`tidyverse`**.
-
---
-
-Todas las funciones de **`stringr`**, comienzan con el prefijo "**str_**".
-
---
-
-Para nuestro objetivo, utilizaremos la función `str_detect()`
-
---
-
-Los argumentos que utiliza esta función son:
-
---
-
-- La string sobre la cuál se aplicará la función.
-
---
-
-- El patrón que se buscará (aquí se utilizan las regex).
-
---
-
-Para más información sobre **regex** puede revisar 
-[`aqui`](https://www.diegocalvo.es/expresiones-regulares-en-r/), 
-[`aqui`](https://rpubs.com/ydmarinb/429756) y 
-[`aqui`](https://stringr.tidyverse.org/articles/regular-expressions.html), 
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Ejemplo 1: utilizando la base de guaguas, obtener los tres nombres más 
-repetidos cuyo nombre comience con la letra z.
-
-
-```r
-library(stringr)
-guaguas %&gt;%
-  filter(str_detect(nombre, "^Z")) %&gt;%
-  group_by(nombre) %&gt;%
-  summarise(total = sum(n)) %&gt;%
-  arrange(desc(total)) %&gt;%
-  slice(1:3)
-```
-
-```
-## # A tibble: 3 x 2
-##   nombre  total
-##   &lt;chr&gt;   &lt;int&gt;
-## 1 Zoila    7204
-## 2 Zunilda  7028
-## 3 Zulema   6248
-```
-
---
-
-Algunos operadores importantes a conocer son:
-
-- **`^a`**: se utiliza para indicar que la cadena inicia con "a".
-
-- **`a$`**: se utiliza para indicar que la cadena termina con "a".
-
-- **`a*`**: se utiliza para indicar que la cadena posee "a", cero o más veces.
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-Ejemplo 2: utilizando la base de guaguas, obtener los nombres que comiencen 
-con la letra "I" y terminen con la letra "o".
-
-
-```r
-library(stringr)
-guaguas %&gt;%
-  filter(str_detect(nombre, "^I.*o$")) %&gt;%
-  group_by(nombre) %&gt;%
-  summarise(total = sum(n)) %&gt;%
-  arrange(desc(total))
-```
-
-```
-## # A tibble: 8 x 2
-##   nombre    total
-##   &lt;chr&gt;     &lt;int&gt;
-## 1 Ignacio   66672
-## 2 Isidro     1949
-## 3 Isidoro    1550
-## 4 Ivo        1090
-## 5 Italo       399
-## 6 Iñigo       287
-## 7 Ildefonso    83
-## 8 Irenio       16
-```
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Bonus
-
-La función `str_detect()` también se puede usar con `case_when()`.
-
-- Utilice la base guaguas.
-
-- Filtre los registros de mujeres (sexo == "F") del año de su nacimiento.
-
-- Genere una variable que indique si el nombre termina con a ("a$"), o no.
-
-- Obtenga el número de nombres que terminan con a y cuantos que no.
-
-
-```r
-guaguas %&gt;%
-  filter(sexo == "F" &amp; anio == 1990) %&gt;%
-  mutate(termina_a = case_when(str_detect(nombre, "a$") ~ 1,
-                               TRUE ~ 0)) %&gt;%
-  group_by(termina_a) %&gt;%
-  summarise(n = n())
-```
-
-```
-## # A tibble: 2 x 2
-##   termina_a     n
-##       &lt;dbl&gt; &lt;int&gt;
-## 1         0   321
-## 2         1   341
-```
-
----
-
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-
-# Ejercicio final
-
-
-...los veremos en R.
 
 ---
 
@@ -1462,12 +1516,7 @@ background-position: 100% 0%
 
 # Ejercicios para la 🏠
 
-- Importar la base **ene-2019-11.csv**. Las siguientes tareas realicelas sobre 
-la base ene.
-
-- Generar un cuadro de resumen que muestre en las filas la categoría de rama 
-de actividad económica (**b14_rev4cl_canes**) y en las columnas los grupos 
-ocupacionales (**b1**).
+- Importar la base **ene-2019-11.csv**. 
 
 - Cree las siguientes variables:
 
@@ -1485,7 +1534,11 @@ la variable **pet** y el total de la variable **ocu**.
 que tomará el valor de: total de ocu / total de pet * 100
 
 (De esta forma se obtiene la tasa de ocupación, pero no será equivalente a 
-la oficial pues no se están considerando los factores de expansión.)
+la oficial pues no se están considerando los factores de expansión.).
+
+- Generar un cuadro de resumen que muestre en las filas la categoría de rama 
+de actividad económica (**b14_rev4cl_canes**) y en las columnas los grupos 
+ocupacionales (**b1**).
 
 ---
 
