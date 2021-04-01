@@ -4,7 +4,7 @@
     <title>Capacitación en R y herramientas de productividad</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2021-03-29" />
+    <meta name="date" content="2021-03-31" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -148,7 +148,7 @@ print(df[1:2, ])
 
 --
 
-... crear una columna con el número de cracteres que tiene x2
+... crear una columna con el número de caracteres que tiene x2
 
 ...filtrar aquellos registros con más de 5 caracteres
 
@@ -185,68 +185,40 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
+# Uso de condicionales: if_else()
   
-## Uso de condicionales: `if_else()`
-
 En la sesión anterior, conocimos la función `if_else()`, la cual se puede 
 entender como: "*si sucede..., haz..., de otro modo, haz...*".
 
 --
 
-A diferencia de la función de R base `ifelse()`, la 
-función `if_else()`, considera un argumento específico para aquellas 
+La función `if_else()`, considera un argumento específico para aquellas 
 condiciones que no es posible evaluar si son *verdaderas* o *falsas* 
 (valores missing).
-
---
-
-Un ejemplo: en la base ene (la misma utilizada en la sesión anterior), 
-crear una variable llamada *glosa_sexo*, la cual tomará valor "hombre" en caso 
-que sexo sea igual a 1 (sexo == 1), y el valor "mujer" en caso contrario.
 
 --
 
 
 ```r
 library(readr)
-ene &lt;- read.csv(file = "data/ene-2019-11.csv")
+ene &lt;- read_csv(file = "data/ene-2019-11.csv")
 ```
 
----
 
-background-image: url("imagenes/fondo2.PNG")
-background-size: contain;
-background-position: 100% 0%
-  
-# Transformación de datos (2)
-  
-## Uso de condicionales: `if_else()`
+
 
 
 ```r
 ene &lt;- ene %&gt;%
-  mutate(glosa_sexo = if_else(sexo == 1, "hombre", "mujer"))
+  mutate(glosa_sexo = if_else(sexo_missing == 1, "hombre", "mujer", "missing"))
 table(ene$glosa_sexo)
 ```
 
 ```
 ## 
-## hombre  mujer 
-##  46064  50176
+##  hombre missing   mujer 
+##   46060      10   50170
 ```
-
---
-
-¿Es posible utilizar `if_else()` para crear variables con más categorías?
-
---
-
-**Si, es posible.**
-
---
-
-Podemos usar varios `if_else()` consecutivamente
 
 
 ---
@@ -255,10 +227,34 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
+# Uso de condicionales: if_else()
   
-## Uso de condicionales: `if_else()`
 
+¿Podríamos usar `if_else()` para crear variables con más categorías?
+
+--
+
+Pensemos en 10 tramos de edad...
+
+
+.center[
+&lt;img src="https://media.giphy.com/media/26gR0YFZxWbnUPtMA/giphy.gif" width="400" /&gt;
+]
+
+
+--
+
+## Podemos usar varios `if_else()` consecutivamente
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+  
+# Uso de condicionales: if_else()
+  
 Ejemplo: creación de tres tramos etarios: "menores a 15", "entre 15 y 30 años" 
 y "mayores de 30 años".
 
@@ -300,10 +296,8 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
+# Uso de condicionales: if_else()
   
-## Uso de condicionales: `if_else()`
-
 En cada paso, es necesario utilizar el valor previo
 
 --
@@ -312,7 +306,9 @@ Si no se considera lo anterior, la variable creada no tendrá "historia".
 
 --
 
-¿Podemos hacerlo mejor?
+### ¿Qué pasa si tenemos muchas categorías?
+
+### ¿Podemos hacerlo mejor?
 
 .center[
 &lt;img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="400" /&gt;
@@ -326,11 +322,8 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
+# Uso de condicionales: case_when()
   
-## Uso de condicionales: `case_when()`
-
-
 Usando **case_when()**, el resultado anterior sería:
 
 
@@ -363,10 +356,8 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
+# Uso de condicionales: case_when()
   
-## Uso de condicionales: `case_when()`
-
 La función `case_when()` funciona de la siguiente manera:
 
 --
@@ -396,9 +387,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
-  
-## Uso de condicionales: `case_when()`
+# Uso de condicionales: case_when()
 
 **IMPORTANTE**: 
 
@@ -424,17 +413,15 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
+# Pequeño ejercicio
   
-## Uso de condicionales: `case_when()`
-
-Un pequeño ejercicio: utilizando la base de la ene, genere las siguientes 
+Utilizando la base de la ene, genere las siguientes 
 variables, siguiendo el orden de las instrucciones:
 
 - **tramos1**: asigna el valor 1 si la edad es menor que 15, el valor 2 si 
 la edad es mayor o igual a 15 y menor o igual que 30 y el valor 3 si la edad es mayor a 30.
 
-Luego, utilizando la función `table()`, observe cuantos registros están 
+Luego, utilizando la función `table()`, observe cuántos registros están 
 codificados por categoría para la variable "tramos1".
 
 
@@ -445,10 +432,8 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
   
-# Transformación de datos (2)
+# Pequeño ejercicio
   
-## Uso de condicionales: `case_when()`
-
 
 ```r
 ene &lt;- ene %&gt;%
@@ -499,12 +484,10 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
-
-## Agrupación de unidades
+# Agrupación de unidades
 
 En la sesión anterior, vimos algunas funciones que se pueden utilizar en 
-conjunto con `mutate()`, como son:
+conjunto con `mutate()`:
 
 --
 
@@ -534,13 +517,17 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
+# Agrupación de unidades
 
-## Agrupación de unidades
+Podríamos usar la función `filter()` y luego la función `mean()`
 
-Podríamos usar la función `filter()` y luego la función `mean()`. Pero, ¿si 
-queremos calcular el número de registros para muchas categorías de un 
-dataframe?
+
+```r
+ene &lt;- ene %&gt;% 
+  filter(sexo == 1) %&gt;% 
+  mutate(media = mean(edad))
+```
+
 
 --
 
@@ -558,9 +545,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
-
-## Agrupación de unidades
+# Agrupación de unidades
 
 Gran parte del análisis de datos que realizamos involucra la aplicación de una 
 estrategia que en inglés se acuña como *split-apply-combine*.
@@ -586,26 +571,13 @@ ene &lt;- ene %&gt;%
   mutate(n_sexo = n())
 ```
 
---
-
-
-```r
-table(ene$sexo, useNA = "always")
-```
-
-```
-## 
-##     1     2  &lt;NA&gt; 
-## 46064 50176     0
-```
-
 ---
 
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
+# Agrupación de unidades
 
 Número de hombres
 
@@ -613,17 +585,17 @@ Número de hombres
 ```r
 ene %&gt;%
   filter(sexo == 1) %&gt;% 
-  select(idrph, sexo, n_sexo) %&gt;% 
+  select(sexo, n_sexo) %&gt;% 
   slice(1:2)
 ```
 
 ```
-## # A tibble: 2 x 3
+## # A tibble: 2 x 2
 ## # Groups:   sexo [1]
-##     idrph  sexo n_sexo
-##     &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-## 1  808409     1  46064
-## 2 1100843     1  46064
+##    sexo n_sexo
+##   &lt;dbl&gt;  &lt;int&gt;
+## 1     1  46064
+## 2     1  46064
 ```
 
 --
@@ -634,17 +606,17 @@ Número de mujeres
 ```r
 ene %&gt;% 
   filter(sexo == 2) %&gt;%
-  select(idrph, sexo, n_sexo) %&gt;% 
+  select(sexo, n_sexo) %&gt;% 
   slice(1:2)
 ```
 
 ```
-## # A tibble: 2 x 3
+## # A tibble: 2 x 2
 ## # Groups:   sexo [1]
-##     idrph  sexo n_sexo
-##     &lt;int&gt; &lt;int&gt;  &lt;int&gt;
-## 1  808410     2  50176
-## 2 1100844     2  50176
+##    sexo n_sexo
+##   &lt;dbl&gt;  &lt;int&gt;
+## 1     2  50176
+## 2     2  50176
 ```
 
 ---
@@ -653,7 +625,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
+# Agrupación de unidades
 
 - Función auxiliar **`slice()`**
 
@@ -679,9 +651,9 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
+# Agrupación de unidades
 
-Retomemos el ejercicio 3 de la primera sesión:
+Retomemos nuestro trabajo con `guaguas`
 
 --
 
@@ -689,8 +661,6 @@ Utilizando la base de guaguas, obtener el nombre más utilizado en Chile en
 todos los tiempos
 
 --
-
-.pull-left[
 
 
 
@@ -702,6 +672,26 @@ guaguas %&gt;%
   arrange(desc(total)) %&gt;% 
   slice(1)
 ```
+
+- agrupar
+
+- sumar las apariciones de cada nombre
+
+- ordenar de mayor a menor
+
+- cortar la primera fila
+
+---
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Agrupación de unidades
+
+
+
+
+
 
 ```
 ## # A tibble: 2,871 x 6
@@ -721,14 +711,13 @@ guaguas %&gt;%
 ## # ... with 2,861 more rows
 ```
 
-]
 
-.pull-right[
+
 
 &lt;img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="200" /&gt;
 
 
-]
+
 
 
 ---
@@ -737,9 +726,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
-
-## Agrupación de unidades
+# Agrupación de unidades
 
 `group_by` sigue operando, hasta que se indique lo contrario 
 
@@ -766,9 +753,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
-
-## Agrupación de unidades
+# Agrupación de unidades
 
 
 ```r
@@ -797,9 +782,29 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
+# Ejercicio rápido
 
-## Cuadros de resumen
+Utilizando la base de la ENE, creemos una columna llamada **media_edad** que contenga la media de edad en cada una de las regiones
+
+--
+
+
+```r
+ene &lt;- ene %&gt;% 
+  group_by(region) %&gt;% 
+  mutate(media_edad = mean(edad))
+```
+
+
+
+---
+
+background-image: url("imagenes/fondo2.PNG")
+background-size: contain;
+background-position: 100% 0%
+
+# Uso de summarise()
+
 
 Un aliado natural de `group_by()` es `summarise()`.
 
@@ -817,15 +822,15 @@ En combinación con otras funciones, es una manera de tabular información.
 &lt;img src="imagenes/group.png" width="400" /&gt;
 ]
 
+
+
 ---
 
 background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
-
-## Cuadros de resumen
+# Uso de summarise()
 
 Con la combinación de estas dos funciones podemos obtener un "cuadro de 
 resumen".
@@ -848,9 +853,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
-
-## Cuadros de resumen
+# Uso de summarise()
 
 
 ```r
@@ -862,7 +865,7 @@ ene %&gt;%
 ```
 ## # A tibble: 16 x 4
 ##    region     n promedio mediana
-##     &lt;int&gt; &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+##     &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ##  1      1  3076     35.3      33
 ##  2      2  3290     35.9      34
 ##  3      3  2840     35.2      33
@@ -887,11 +890,9 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Transformación de datos (2)
+# Ejercicio rápido
 
-## Cuadros de resumen
-
-Un pequeño ejercicio: construir un cuadro de resumen que incluya lo siguiente:
+Construir un cuadro de resumen que incluya lo siguiente:
 
 - Número de registros de la región de O'Higgins, por grupo ocupacional (b1).
 
@@ -908,7 +909,7 @@ ene %&gt;%
 ```
 ## # A tibble: 11 x 2
 ##       b1     n
-##    &lt;int&gt; &lt;int&gt;
+##    &lt;dbl&gt; &lt;int&gt;
 ##  1     1    41
 ##  2     2   226
 ##  3     3   246
@@ -1304,7 +1305,7 @@ En algunos casos, no contamos con una variable que contenga texto, para hacer el
 ## # A tibble: 32 x 3
 ## # Groups:   region [16]
 ##    region  sexo     n
-##     &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##     &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;
 ##  1      1     1  1525
 ##  2      1     2  1551
 ##  3      2     1  1609
@@ -1347,7 +1348,7 @@ Efecto de incluir **names_from**
 ## # A tibble: 16 x 3
 ## # Groups:   region [16]
 ##    region sexo1 sexo2
-##     &lt;int&gt; &lt;int&gt; &lt;int&gt;
+##     &lt;dbl&gt; &lt;int&gt; &lt;int&gt;
 ##  1      1  1525  1551
 ##  2      2  1609  1681
 ##  3      3  1379  1461
@@ -1459,9 +1460,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Tidy data
-
-## Pequeño ejercicio
+# Ejercicio rápido
 
 Utilizando la base *ene*, calcule el número de registros según grupo 
 ocupacional (b1), por mes (mes_encuesta).
@@ -1475,9 +1474,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Tidy data
-
-## Pequeño ejercicio
+# Ejercicio rápido
 
 
 ```r
@@ -1493,7 +1490,7 @@ ene %&gt;%
 ## # A tibble: 11 x 4
 ## # Groups:   b1 [11]
 ##       b1 mes_10 mes_11 mes_12
-##    &lt;int&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
+##    &lt;dbl&gt;  &lt;int&gt;  &lt;int&gt;  &lt;int&gt;
 ##  1     1    314    374    411
 ##  2     2   1359   1752   1833
 ##  3     3   1442   1743   1809
@@ -1530,13 +1527,13 @@ background-position: 100% 0%
 - Genere un cuadro de resumen agrupado por región que muestre el total de 
 la variable **pet** y el total de la variable **ocu**.
 
-- Sobre el cuadro de resumen del punto anterior, cree la variable **to**, 
-que tomará el valor de: total de ocu / total de pet * 100
+- Sobre el cuadro de resumen del punto anterior, cree la variable **tasa_ocup** por región, 
+usando la siguiente expresión: **total de ocu / total de pet X 100**
 
 (De esta forma se obtiene la tasa de ocupación, pero no será equivalente a 
 la oficial pues no se están considerando los factores de expansión.).
 
-- Generar un cuadro de resumen que muestre en las filas la categoría de rama 
+- Usando las funciones de `tidyr`, genera un cuadro de resumen que muestre en las filas la categoría de rama 
 de actividad económica (**b14_rev4cl_canes**) y en las columnas los grupos 
 ocupacionales (**b1**).
 
