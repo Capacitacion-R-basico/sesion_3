@@ -251,7 +251,7 @@ y "mayores de 30 años".
 --
 
 ```{r}
-# Ejemplo: método 1
+# Ejemplo: if_else consecutivos
 ene <- ene %>%
   mutate(
     tramos_etarios = if_else(edad < 15,
@@ -314,7 +314,7 @@ ene <- ene %>%
   mutate(tramos_etarios3 = case_when(edad < 15               ~ "menores a 15",
                                      edad >= 15 & edad <= 30 ~ "entre 15 y 30 años",
                                      edad > 30               ~ "mayores de 30 años",
-                                     TRUE                    ~ "")
+                                     TRUE                    ~ "fuera de rango")
     )
 ```
 
@@ -390,8 +390,11 @@ background-position: 100% 0%
   
 Utilizando la base de la ene y usando `case_when`, genera: 
 
-- **tramos1**: valor 1 si la edad es menor que 15, el valor 2 si 
-la edad es mayor o igual a 15 y menor o igual que 30 y el valor 3 si la edad es mayor a 30.
+- **tramos1**: valor 1 si la edad es mayor o igual a 0 y menor que 15, el valor 2 si 
+la edad es mayor o igual a 15 y menor que 30, el valor 3 si la edad es mayor o igual a 30 y menor a 60 y 
+el valor 4 si la edad es mayor o igual que 60.
+
+Recuerda incluir una condición para los valores que puedan estar fuera del rango establecido y usa algún código distintivo para eso.
 
 Luego, utilizando la función `table()`, observa cuántos registros están 
 codificados por categoría para la variable "tramos1".
@@ -408,9 +411,11 @@ background-position: 100% 0%
   
 ```{r}
 ene <- ene %>%
-  mutate(tramos1 = case_when(edad <  15              ~ 1,
-                             edad >= 15 & edad <= 30 ~ 2,
-                             edad > 30               ~ 3))
+  mutate(tramos1 = case_when(edad >= 0  & edad < 15 ~ 1,
+                             edad >= 15 & edad < 30 ~ 2,
+                             edad >= 30 & edad < 60 ~ 3,
+                             edad >= 60             ~ 4,
+                             TRUE                   ~ 999))
     
 ```
 
@@ -427,10 +432,14 @@ table(ene$tramos1, useNA = "always")
 
 
 ```{r, eval=FALSE}
+
 ene <- ene %>%
-  mutate(tramos1 = case_when(edad <  15              ~ 1,
-                             edad >= 15 & edad <= 30 ~ 2,
-                             edad <= 200             ~ 3)) #<<  
+  mutate(tramos1 = case_when(edad >= 0  & edad < 15 ~ 1,
+                             edad >= 15 & edad < 30 ~ 2,
+                             edad >= 30 & edad < 60 ~ 3,
+                             edad >= 60             ~ 4,
+                             edad <= 200            ~ 5, #<< 
+                             TRUE                   ~ 999))
 
 ```
 
@@ -512,20 +521,8 @@ background-position: 100% 0%
 
 # Agrupación de unidades
 
-Gran parte del análisis de datos que realizamos involucra la aplicación de una 
-estrategia que en inglés se acuña como *split-apply-combine*.
-
---
-
-- Primero `group_by()` divide el *data frame*.
-
-- Luego opera una función con la data fragmentada.
-
-- Finalmente `group_by()` vuelve a combinar los resultados.
-
---
-
-Ejemplo: obtener el número de registros de hombres y el de mujeres.
+Gran parte del análisis de datos involucra la aplicación de una 
+estrategia que en inglés se denomina *split-apply-combine*.
 
 --
 
@@ -534,6 +531,22 @@ ene <- ene %>%
   group_by(sexo) %>%
   mutate(n_sexo = n())
 ```
+
+
+- Primero `group_by()` divide el *data frame*.
+
+- Luego opera una función con los datos fragmentados.
+
+- Finalmente, volvemos a combinar los resultados parciales.
+
+--
+
+.center[
+
+<img src="imagenes/split_apply_combine.png" width="600" />
+
+]
+
 
 ---
 
@@ -569,7 +582,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Agrupación de unidades
+# Paréntesis de slice
 
 - Función auxiliar **`slice()`**
 
@@ -613,7 +626,7 @@ guaguas %>%
   group_by(nombre) %>%
   mutate(total = sum(n)) %>%
   arrange(desc(total)) %>% 
-  slice(1)
+  slice(1) #<<
 
 ```
 
@@ -633,9 +646,6 @@ background-position: 100% 0%
 # Agrupación de unidades
 
 
-
-
-
 ```{r, echo=FALSE}
 library(guaguas)
 guaguas %>%
@@ -648,12 +658,9 @@ guaguas %>%
 
 
 
-
+.center[
 <img src="https://media.giphy.com/media/xUPGcz2H1TXdCz4suY/giphy.gif" width="200" />
-
-
-
-
+]
 
 ---
 
@@ -694,8 +701,8 @@ background-position: 100% 0%
 guaguas %>%
   group_by(nombre) %>%
   mutate(total = sum(n)) %>%
-  arrange(desc(total)) %>% 
   ungroup() %>%  #<<
+  arrange(desc(total)) %>% 
   select(nombre, total) %>% 
   slice(1)
 
@@ -711,7 +718,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Ejercicio rápido
+# Ejercicio express
 
 Utilizando la base de la ENE, creemos una columna llamada **media_edad** que contenga la media de edad en cada una de las regiones
 
@@ -795,7 +802,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Ejercicio rápido
+# Ejercicio express
 
 Construir un cuadro de resumen que incluya lo siguiente:
 
@@ -824,8 +831,7 @@ background-position: 100% 0%
 
 # Tidy data
 
-Es una forma de describir datos que están organizados con una estructura 
-particular, una estructura rectangular.
+Es una forma de describir datos que están organizados con una **estructura rectangular**.
 
 --
 
@@ -868,8 +874,8 @@ Algunas características de estas datas son:
 
 --
 
-El universo de **`tidyverse`** cuenta con un paquete llamado **`tidyr`**, el 
-que cuenta con funciones para trabajar con **tidy data**.
+El universo de **`tidyverse`** cuenta con un paquete llamado **`tidyr`**,  
+que contiene funciones para implementar los conceptos de **tidy data**.
 
 --
 
@@ -1033,7 +1039,7 @@ ene %>%
 ```
 
 - *names_from*: categorías que se quiere convertir en columnas
-- *vaues_from*: columna desde la cual extraer los valores
+- *values_from*: columna desde la cual extraer los valores
 
 ---
 
@@ -1073,7 +1079,7 @@ background-position: 100% 0%
 
 # Tidy data
 
-Efecto de incluir **names_from**
+Efecto de incluir **names_prefix**
 
 ```{r, echo=FALSE}
 ene %>%
@@ -1097,16 +1103,19 @@ background-position: 100% 0%
 
 ## Función `pivot_longer()`
 
+Esta función se puede considerar como la opuesta a `pivot_wider()`.
+
+--
+
 Esta función incrementa el número de filas y disminuye el número de columnas.
 
 --
 
-Los dataframes obtenidos por esta función son más fáciles de manipular y de 
-comparar, pero no de analizar.
+Los dataframes obtenidos por esta función son más fáciles de **manipular**, pero no de visualizar
 
 --
 
-Esta función se puede considerar como la opuesta a `pivot_wider()`.
+
 
 --
 
@@ -1164,13 +1173,13 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Ejercicio rápido
+# Ejercicio express
 
 Utilizando la base *ene*, calcule el número de registros según grupo 
 ocupacional (b1), por mes (mes_encuesta).
 
 Presente el resultado como un cuadro de resumen, con los grupos ocupacionales 
-en las filas y los meses de encuestaje en las columnas.
+en las filas y los meses en las columnas.
 
 ---
 
@@ -1178,7 +1187,7 @@ background-image: url("imagenes/fondo2.PNG")
 background-size: contain;
 background-position: 100% 0%
 
-# Ejercicio rápido
+# Ejercicio express
 
 ```{r}
 ene %>%
@@ -1209,14 +1218,14 @@ background-position: 100% 0%
     en el rango (extremos incluidos) entre 1 y 7, y que tome el valor 0 en 
     cualquier otro caso.
     
-- Genere un cuadro de resumen agrupado por región que muestre el total de 
-la variable **pet** y el total de la variable **ocu**.
+- Genere un cuadro de resumen agrupado por región que muestre la suma de 
+la variable **pet** y la suma de la variable **ocu**.
 
 - Sobre el cuadro de resumen del punto anterior, cree la variable **tasa_ocup** por región, 
 usando la siguiente expresión: **total de ocu / total de pet X 100**
 
 (De esta forma se obtiene la tasa de ocupación, pero no será equivalente a 
-la oficial pues no se están considerando los factores de expansión.).
+la oficial, pues no se están considerando los factores de expansión).
 
 - Usando las funciones de `tidyr`, genera un cuadro de resumen que muestre en las filas la categoría de rama 
 de actividad económica (**b14_rev4cl_canes**) y en las columnas los grupos 
