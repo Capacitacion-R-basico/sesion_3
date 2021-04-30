@@ -27,7 +27,7 @@ class: center, middle
 
 ## Procesamiento de bases de datos (2)
 
-### Abril 2021
+### Mayo 2021
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = TRUE)
@@ -525,13 +525,13 @@ Gran parte del análisis de datos involucra la aplicación de una
 estrategia que en inglés se denomina *split-apply-combine*.
 
 --
-
+.small[
 ```{r}
 ene <- ene %>%
   group_by(sexo) %>%
   mutate(n_sexo = n())
 ```
-
+]
 
 - Primero `group_by()` divide el *data frame*.
 
@@ -558,24 +558,26 @@ background-position: 100% 0%
 
 Número de hombres
 
+.small[
 ```{r}
 ene %>%
   filter(sexo == 1) %>% 
   select(sexo, n_sexo) %>% 
   slice(1:2)
 ```
-
+]
 --
 
 Número de mujeres
 
+.small[
 ```{r}
 ene %>% 
   filter(sexo == 2) %>%
   select(sexo, n_sexo) %>% 
   slice(1:2)
 ```
-
+]
 ---
 
 background-image: url("imagenes/fondo2.PNG")
@@ -1271,4 +1273,4 @@ class: center, middle
 
 ## Procesamiento de bases de datos (2)
 
-### Noviembre 2020
+### Mayo 2021

@@ -40,6 +40,7 @@
   --header-h1-font-size: 2.25rem;
   --header-h2-font-size: 1.4rem;
   --header-h3-font-size: 1.2rem;
+  --header-big-font-size: 3rem;
 
   /* Colors */
   --text-color: black;
@@ -304,6 +305,8 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 }
 
 
+
+
 .caja {
   width: 600px;
   padding: 5px;
@@ -317,6 +320,10 @@ table,  td {
   border: 1px solid black;
   background-color: white;
   padding: 1px;
+}
+
+.small .remark-code  {
+  font-size: 70%;  
 }
 
 

@@ -4,7 +4,7 @@
     <title>Capacitación en R y herramientas de productividad</title>
     <meta charset="utf-8" />
     <meta name="author" content="" />
-    <meta name="date" content="2021-04-06" />
+    <meta name="date" content="2021-04-30" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -24,7 +24,7 @@ class: center, middle
 
 ## Procesamiento de bases de datos (2)
 
-### Abril 2021
+### Mayo 2021
 
 
 
@@ -558,14 +558,14 @@ Gran parte del análisis de datos involucra la aplicación de una
 estrategia que en inglés se denomina *split-apply-combine*.
 
 --
-
+.small[
 
 ```r
 ene &lt;- ene %&gt;%
   group_by(sexo) %&gt;%
   mutate(n_sexo = n())
 ```
-
+]
 
 - Primero `group_by()` divide el *data frame*.
 
@@ -592,6 +592,7 @@ background-position: 100% 0%
 
 Número de hombres
 
+.small[
 
 ```r
 ene %&gt;%
@@ -608,11 +609,12 @@ ene %&gt;%
 ## 1     1  46064
 ## 2     1  46064
 ```
-
+]
 --
 
 Número de mujeres
 
+.small[
 
 ```r
 ene %&gt;% 
@@ -629,7 +631,7 @@ ene %&gt;%
 ## 1     2  50176
 ## 2     2  50176
 ```
-
+]
 ---
 
 background-image: url("imagenes/fondo2.PNG")
@@ -1584,7 +1586,7 @@ class: center, middle
 
 ## Procesamiento de bases de datos (2)
 
-### Noviembre 2020
+### Mayo 2021
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
