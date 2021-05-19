@@ -1230,7 +1230,7 @@ usando la siguiente expresión: **total de ocu / total de pet X 100**
 la oficial, pues no se están considerando los factores de expansión).
 
 - Usando las funciones de `tidyr`, genera un cuadro de resumen que muestre en las filas la categoría de rama 
-de actividad económica (**b14_rev4cl_canes**) y en las columnas los grupos 
+de actividad económica (**b14_rev4cl_caenes**) y en las columnas los grupos 
 ocupacionales (**b1**).
 
 ---
